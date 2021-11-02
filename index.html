@@ -1,0 +1,73 @@
+<!-- pov: you did ctrl + u in order to make ur friends think u are a hacker -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+  </head>
+  <body>
+    <script src="./scripts/graphics/background.js" ></script>
+  </body>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>cryptocracy</title>
+    <link href="./styles/style.css" rel="stylesheet" type="text/css" />
+      <script src="https://www.gstatic.com/firebasejs/ui/5.0.0/firebase-ui-auth.js"></script>
+      <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/5.0.0/firebase-ui-auth.css" /> 
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/sass.js/0.6.2/sass.min.js" integrity="sha512-lmuNSGprTM9SdDQ8WuvkeGSgUn4R7jogp37VuQ8rrdNOSHQ9UDY9PF5f/gXjhMytuvxf3NADUXL+eb7K0DvIcw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      
+
+
+
+  </head>
+  <body>
+    <div id="sketch-container"></div>
+    <div id="mining-container" class="mining-container">
+      <p id="net-worth">???</p>
+      <h5 id="bits">Bits: ???</h5>
+      
+      <div class="btn" id="main-button"></div>
+      <div id="inventory-container"></div>
+      
+    </div>
+
+    <div id="upgrade-container" class="upgrade-container">
+      <div id="board"></div>
+      <button class="btn" id="tradesNav">Trades store</button>
+      <button class="btn" id="premiumNav">The Premium Shop</button>
+      <button class="btn" id="idlePurchaseNav">Idle Shop</button>
+    </div>
+
+    <div id="market-container" class="market-container">
+      <div class="auth-box">
+        <div id="sign-out-button">Sign Out</div>
+        <a id="username">*insert username here*</a>
+      </div>
+      <div id="create-trade-container" class="vertical-list">
+        <h4>You recieve:</h4>
+        <select class="item-dropdown" id="to-give-select">
+        </select>
+        <input type="number" id="to-give-num" min="0" placeholder="0">
+        <h4>You give:</h4>
+        <select class="item-dropdown" id="to-get-select">
+        </select>
+        <input type="number" id="to-get-num" min="0" placeholder="0">
+        <div class="btn" id="create-trade-button">
+            create trade
+      </div>
+        <div id="trade-container" class="trade-container">
+        </div>
+                
+      </div>
+      <div id="material-button-container">
+        </div>  
+      <div id="idle-purchase-container">
+        <h1>Buy some stuff</h1>
+        </div>  
+    </div>
+    <script type="module" src="./scripts/firebaseJunk/initializeApp.js"></script>
+    <script type="module" src="script.js"></script>
+  </body>
+  
+</html>
