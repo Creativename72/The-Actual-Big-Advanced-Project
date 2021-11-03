@@ -23,7 +23,7 @@ export function getLeaderboardListener(callback){
   
   const db = getDatabase();
   var r = ref(db, "users/");
- var q = query(r, orderByChild("netWorth"), startAfter(false),limitToFirst(3))
+ var q = query(r, orderByChild("netWorth"), startAfter(false),limitToLast(10))
  onValue(q, function(snapshot) {
       //console.log(snapshot.val());
       callback(snapshot.val())

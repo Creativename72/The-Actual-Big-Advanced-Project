@@ -18,7 +18,9 @@
   font-family: poppins-thin;
   src: url(../assets/Poppins/Poppins-Thin.ttf);
 }
-
+p,div,button,h1,h2,h2,h4,h5{
+  color:white;
+}
 p, div, button{
   font-family: poppins-medium
 }
@@ -48,31 +50,57 @@ body{
   display: flex;
   flex-direction: row;
   font: impact;
+  background-color: black;
 }
 #bits{
   font-size:1.2rem;
-  font-family: poppins-light;
+  font-family: poppins-bold;
   border-style: solid;
   border-width: 2px;
   width:80%;
   padding:10px 0;
   text-align: center;
-  background-color: rgba(255, 255, 255, 0.6)
+  background-color: black;
+  color:white
 }
-#bit-upgrade{
+#board{
   width:90%;
-  border:dashed 2px rgb(157, 78, 221);
-  margin-bottom: 1.5vh
+  background:#121212;
+  border:solid 4px rgb(255, 203, 126);
+  color:white;
+  font-family: poppins-light;
+  margin-bottom: 1.5vh;
+  align-self: center;
 }
+#scrolly-thingy{
+  color:black;
+  font-size: 1.4rem;
+  font-family: monospace;
+}
+.scrolly-thingy-container
+{
+  position: relative;
+  background: white;
+  display: flex;
+  justify-content: center;
+  width: 70%;
+  padding:10px;
+  
+  
+  box-shadow: rgba(240, 46, 170, 0.4) 5px 5px, rgba(240, 46, 170, 0.3) 10px 10px, rgba(240, 46, 170, 0.2) 15px 15px, rgba(240, 46, 170, 0.1) 20px 20px, rgba(240, 46, 170, 0.05) 25px 25px;
+  margin-bottom: 10vh;
+  transform-style: preserve-3d;
+  transform:translateZ(-50px);
+}
+
+
 #main-button{
-  width:37vh;
-  height: 15vh;
+
   padding:10px 10px;
   z-index: 100;
   text-align:center;
   color:black;
-  font-size: 1.4rem;
-  font-family: monospace;
+
   border: solid 2px rgb(white);
   user-select: none;
   display: flex;
@@ -80,17 +108,31 @@ body{
   flex-direction: column;
   border-radius: 2rem;
   background-color: rgb(255, 203, 126);
-  
+  min-height:14vh;
+  width:60%;
+  background-image: url("../assets/images/bit.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+
 }
 #main-button:hover{
-  color:white;
+  color:black;
   background-color:initial;
   background-color: rgba(255,155,8,1);
   box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-  
+}
+#main-button:active{
+  transform: translateY(0px) scale(.97);
   
 }
-
+#board{
+  
+}
+.leaderboardList{
+display: flex;
+  flex-direction: column;
+}
 .item-dropdown{
   margin-bottom: 1vh;
 }
@@ -99,7 +141,6 @@ body{
   border: none;
   background-color: inherit;
   padding: 14px 28px;
-  color:black;
   cursor: pointer;
   display: inline-block;
   width:80%;
@@ -119,7 +160,7 @@ body{
   top:0;
   left:0;
   z-index: -1;
-  
+  width:43vw;
 }
 .mining-container{
   background-color:transparent;
@@ -129,12 +170,9 @@ body{
   display: flex;
   flex-direction: column;
   align-items: center;
-  color:black;
-  
-  
 }
 #inventory-container{
-  margin-top: 20%;
+  margin-top: 14%;
   display: grid;
   grid-template-columns: auto auto;
   width:100%;
@@ -145,33 +183,36 @@ body{
   display: flex;
   flex-direction: row;
   align-items: center;
+  text-align: center;
   position: relative;
   width:80%;
-  background-color: rgba(255, 255, 255, 0.507);
+  background-color: #121212;
   border-radius:1rem;
+  border: solid 2px #929292;
+  margin-bottom:0.8vh;
 }
 .inventory-text{
-  color:rgb(0, 0, 0);
+  color:white;
   font-size:0.8rem;
-  
-  height:100%;
+  align-self: center;
   font-family: poppins-medium;
   border-top:none;
+  margin-left: 10px;
 }
 .inventory-icon{
   width: 40px;
   height:40px;
   position:absolute;
-  top:0;
+  top:6px;
   right:20px;
 }
 
 .upgrade-container{
- background-color: white;
+ background-color: black;
   width:28vw;
   height:98vh;
   padding: 1vh 1vw;
-  border-left: solid 2px black;
+  border-left: solid 2px white;
 }
 
 .market-container{
@@ -179,25 +220,25 @@ body{
   width:43vw;
   height:98vh;
   padding: 1vh 1vw;
-  background-color:white;
-   border-left: solid 2px black;
+  background-color:black;
+   border-left: solid 2px white;
 }
 .trade-btn{
   width:80%;
-  background-color:white;
+  background-color:#121212;
 }
 .trade-btn:hover{
   background-color:rgba(255,155,8,1);
 }
 .auth-box{
-  background-color: white;
+  background-color: #121212;
   
   display: flex;
   flex-direction: row-reverse;
   align-items: center;
   justify-content: space-around;
-  height:12vh;
-  width:90%;
+  height:08vh;
+  width:80%;
   
 }
 
@@ -205,16 +246,18 @@ body{
   border: none;
   background-color: inherit;
   padding: 14px 28px;
-  color:black;
+  color:white;
   cursor: pointer;
   display: inline-block;
   width:80%;
   text-align:left;
 }
-.material-button:hover {background: rgb(51, 51, 51);color:white;}
+.material-button:hover {
+  background: rgb(51, 51, 51);
+  color:white;}
 #sign-out-button{
-  color:black;
-  background-color:white;
+  
+  background-color:rgb(73, 73, 73);
   text-align: center;
   height:100%;
   width:60%;
@@ -223,10 +266,25 @@ body{
   align-items: center;
   
 }
+.nav-btn{
+  
+  background-color: inherit;
+  padding: 14px 28px;
+  cursor: pointer;
+  display: inline-block;
+  width:80%;
+  text-align:left;
+  margin-top:4vh;
+  border:solid 2px rgba(240, 46, 170, 0.4);
+}
+.nav-btn:hover{
+  background-color: #4e4e4e;
+  transform: translateY(4px) 
+}
 #username{
   margin:8px 20px;
 }
 #sign-out-button:hover{
-  background-color:#0C1B33;
-  color:white;
+  background-color:white;
+  color:black;
 }

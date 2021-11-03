@@ -35,7 +35,7 @@ class particle {
       this.speedY *= -1 * bounceSpeedMult;
     }
     if (this.particle1 != "a") {
-       stroke(0,0,0)
+       stroke(240, 46, 170)
        line(this.x,this.y,this.particle1.x,this.particle1.y)
     }
 
@@ -72,7 +72,7 @@ function setup() {
 
 function draw() {
   
-  background(255)
+  background(0)
   if (mouseIsPressed) {
     gameSpeed = -10
   } else {

@@ -50,7 +50,7 @@ export class App {
     this.addMaterialButtons();
     this.displayTradeOptions();
     this.createCreateTradeSelect();
-    this.createNavigationListenersPart2ElectricBoogaloo();
+    this.createNavigationListeners(); //Part2ElectricBoogaloo
     //binds onButtonUpdate to click of the main button
     document.getElementById("main-button").addEventListener("click", () => this.onButtonUpdate())
     document.getElementById("sign-out-button").addEventListener("click", signOutUser)
@@ -61,43 +61,47 @@ export class App {
   onNetWorthChange(snap){
     //console.log("First",snap)
     var board = document.getElementById("board")
-    var html1 = "<ol>"
+    var html1 = "<ol class='leaderboardList'>"
     var middle = ""
-    var html2 = "<ol>"
-    for (var i in snap){
-      middle+="<li>"+snap[i].username+" : "+snap[i].netWorth+"</li>"
+    var html2 = "</ol>"
+    var keys = Object.keys(snap);
+    keys.sort((a,b) => snap[b].netWorth - snap[a].netWorth);
+    var sorted = keys.map(key => snap[key]);
+    for (var i in sorted){
+      middle+="<li>"+sorted[i].username+" : "+sorted[i].netWorth+"</li>"
     }
     board.innerHTML=(html1+middle+html2)
   }
 
   createNavigationListeners() {
     //automate this process
+    hideAll();
     function hideAll() {
       document.getElementById("create-trade-container").style.display = "none"
       document.getElementById("material-button-container").style.display = "none"
       document.getElementById("idle-purchase-container").style.display = "none"
-      document.getElementById("tradesNav").style.color = "black";
-      document.getElementById("premiumNav").style.color = "black";
-      document.getElementById("idlePurchaseNav").style.color = "black";
+      document.getElementById("tradesNav").style.color = "white";
+      document.getElementById("premiumNav").style.color = "white";
+      document.getElementById("idlePurchaseNav").style.color = "white";
     }
 
     document.getElementById("tradesNav").addEventListener("click", ()=>{
       hideAll()
       document.getElementById("create-trade-container").style.display = "inline"
-      document.getElementById("tradesNav").style.color = "#9D4ED0";
+      document.getElementById("tradesNav").style.color = "rgb(255,155,8)";
     })
 
     document.getElementById("premiumNav").addEventListener("click", ()=>{
       hideAll()
       document.getElementById("material-button-container").style.display = "inline"
-      document.getElementById("premiumNav").style.color = "#9D4ED0";
+      document.getElementById("premiumNav").style.color = "rgb(255,155,8)";
     })
 
 
     document.getElementById("idlePurchaseNav").addEventListener("click", ()=>{
       hideAll()
       document.getElementById("idle-purchase-container").style.display = "inline"
-      document.getElementById("idlePurchaseNav").style.color = "#9D4ED0";
+      document.getElementById("idlePurchaseNav").style.color = "rgb(255,155,8)";
     })
   }
 
@@ -108,8 +112,9 @@ export class App {
     function hideAll() {
       for (var i = 0; i < buttonList.length; i++) {
         
-        document.getElementById(containerList[i]).style.display = "none"
-        document.getElementById(buttonList[i]).style.color = "black";
+        document.getElementById(containerList[i]).style.display = "none";
+        document.getElementById(buttonList[i]).style.color = "white";
+        console.log("hiding: " + containerList[i]);
       }
     }
     
@@ -119,10 +124,10 @@ export class App {
         
         hideAll()
         document.getElementById(containerList[i]).style.display = "inline"
-        document.getElementById(buttonList[i]).style.color = "#9D4ED0";
-        console.log("listener running")
+        document.getElementById(buttonList[i]).style.color = "rgb(255,155,8)";
+        
       })
-      console.log("checkpoint 2")
+      console.log("listener created: " + buttonList[i])
     }
     
   }

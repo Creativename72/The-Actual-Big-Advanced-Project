@@ -21,7 +21,7 @@ export function getRandomNumberString(digits) {
   for (var i = 0; i < digits; i++) {
     res += Math.round(Math.random() * 9).toString();
   }
-  document.getElementById("main-button").innerHTML = "< " + res + " >";
+  document.getElementById("scrolly-thingy").innerHTML = "< " + res + " >";
   //console.log(res)
   return res;
 }
