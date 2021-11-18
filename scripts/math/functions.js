@@ -3,7 +3,7 @@ export function bitUnitConversion(numBits) {
   if (numBits < 8) {
     return numBits + " bits"
   } else if (numBits < 8000) {
-    return numBits / 8 + " bytes"
+    return (numBits / 8).toFixed(2) + " bytes"
   }
   var datalist = ["kilo", "mega", "giga", "tera", "peta", "exa", "zeta", "yotta","georga","neila","piga","trumpeta","cellobyte","we couldn't think of a good name-a"]
   numBits = numBits / 8
@@ -12,7 +12,7 @@ export function bitUnitConversion(numBits) {
     numBits = numBits / 1000
     i++
   }
-  return numBits + " " + datalist[i - 1] + "bytes"
+  return numBits.toFixed(2) + " " + datalist[i - 1] + "bytes"
 }
 
 //a function that takes number of digits and returns semi-random string of x numbers 

@@ -32,7 +32,7 @@
       </div>
       
       <div class="btn" id="main-button"></div>
-      <div id="inventory-container"></div>
+      
       
     </div>
 
@@ -41,6 +41,7 @@
       <button class="nav-btn" id="tradesNav">Trades store</button>
       <button class="nav-btn" id="premiumNav">The Premium Shop</button>
       <button class="nav-btn" id="idlePurchaseNav">Idle Shop</button>
+      <button class="nav-btn" id="inventoryNav">Inventory</button>
     </div>
 
     <div id="market-container" class="market-container">
@@ -49,20 +50,24 @@
         <a id="username">*insert username here*</a>
       </div>
       <div id="create-trade-container" class="vertical-list">
-        <h4>You recieve:</h4>
+        <div class="gray-card">
+        <h4 class="card-header">You recieve:</h4>
         <select class="item-dropdown" id="to-give-select">
         </select>
         <input type="number" id="to-give-num" min="0" placeholder="0">
-        <h4>You give:</h4>
+        <h4 class="card-header">You give:</h4>
         <select class="item-dropdown" id="to-get-select">
         </select>
         <input type="number" id="to-get-num" min="0" placeholder="0">
         <div class="btn" id="create-trade-button">
             create trade
-      </div>
-        <div id="trade-container" class="trade-container">
         </div>
-                
+        </div>
+        <div id="trade-container" class="trade-container">
+          <div id="active-trades" class="trade-container">
+            <h3> Your Active Trades: </h3>
+          </div>
+        </div>        
       </div>
       <div id="material-button-container">
         </div>  
@@ -70,7 +75,13 @@
         <p id="net-worth">???</p>
         <h1>Buy some stuff</h1>
         </div>  
-    </div>
+      
+      
+      <div id="main-inventory-container">
+        <div id="inventory-container"></div>
+      </div>
+      </div>
+      
     <script type="module" src="./scripts/firebaseJunk/initializeApp.js"></script>
     <script type="module" src="script.js"></script>
   </body>

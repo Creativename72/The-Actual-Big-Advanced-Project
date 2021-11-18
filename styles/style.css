@@ -1,3 +1,4 @@
+
 @font-face {
   font-family: poppins-medium;
   src: url(../assets/Poppins/Poppins-Medium.ttf);
@@ -28,16 +29,21 @@ h1,h2{
   font-family: poppins-extra-bold
 }
 h3,h4,h5{
-  font-family: poppins-bold
+  font-family: poppins-bold;
 }
 select{
   padding:4px 8px;
   font-family: poppins-medium;
+  background-color:  #121212;
+  color:white;
+  border: solid 1px rgb(189, 189, 189);
 }
 input{
   font-family: poppins-light;
   font-size: 0.8rem;
   padding:4px 8px;
+  background-color: #121212;
+  color:white;
 }
 
 div{
@@ -93,6 +99,12 @@ body{
   transform:translateZ(-50px);
 }
 
+.main-inventory-container{
+  display: flex;
+  width:100%;
+  flex-direction: column;
+  align-items: center;
+}
 
 #main-button{
 
@@ -101,7 +113,7 @@ body{
   text-align:center;
   color:black;
 
-  border: solid 2px rgb(white);
+  
   user-select: none;
   display: flex;
   justify-content: space-around;
@@ -120,18 +132,35 @@ body{
   color:black;
   background-color:initial;
   background-color: rgba(255,155,8,1);
-  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+  transform: scale(1.03)
+  
 }
 #main-button:active{
   transform: translateY(0px) scale(.97);
   
 }
-#board{
-  
+#create-trade-container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width:100%
 }
 .leaderboardList{
 display: flex;
   flex-direction: column;
+}
+.gray-card{
+  background-color:rgb(230, 230, 230);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  padding:6px 8px;
+  margin-top:8vh;
+  width:80%;
+  
+}
+.card-header{
+  color:black;
 }
 .item-dropdown{
   margin-bottom: 1vh;
@@ -212,7 +241,7 @@ display: flex;
   width:28vw;
   height:98vh;
   padding: 1vh 1vw;
-  border-left: solid 2px white;
+  border-left: solid 2px rgb(243, 98, 98);
 }
 
 .market-container{
@@ -223,12 +252,16 @@ display: flex;
   background-color:black;
    border-left: solid 2px white;
 }
-.trade-btn{
+.trade-btn,idle{
   width:80%;
   background-color:#121212;
+  height:auto;
+  padding:8px;
+  border: solid 2px rgba(255,155,8,1);
 }
 .trade-btn:hover{
   background-color:rgba(255,155,8,1);
+  transform: scale(1.05);
 }
 .auth-box{
   background-color: #121212;
@@ -242,7 +275,25 @@ display: flex;
   
 }
 
-.material-button{
+#create-trade-container{
+  
+}
+
+#create-trade-button{
+  margin-top:2vh;
+  color:#121212;
+}
+#create-trade-button:hover{
+  color:white;
+}
+.trade-container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top:5vh;
+  width:100%;
+}
+.material-button,.idle-button{
   border: none;
   background-color: inherit;
   padding: 14px 28px;
@@ -252,7 +303,7 @@ display: flex;
   width:80%;
   text-align:left;
 }
-.material-button:hover {
+.material-button:hover,.idle-button:hover {
   background: rgb(51, 51, 51);
   color:white;}
 #sign-out-button{
@@ -279,7 +330,8 @@ display: flex;
 }
 .nav-btn:hover{
   background-color: #4e4e4e;
-  transform: translateY(4px) 
+  transform: translateY(4px) ;
+  
 }
 #username{
   margin:8px 20px;

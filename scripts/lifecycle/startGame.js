@@ -1,9 +1,9 @@
-import {writeUserData, updateBackpackData,getUserData,getTrades, attachTradeListener, updateUserTimeStamp, getLeaderboardListener} from "../firebaseJunk/database.js"
+import {writeUserData, updateBackpackData,getUserData,getTrades, attachTradeListener, updateUserTimeStamp, getLeaderboardListener,updateItemData} from "../firebaseJunk/database.js"
 import {firebaseSetup,signOutUser} from "../firebaseJunk/initializeApp.js"
 import {getRandomNumberString, bitUnitConversion} from "../math/functions.js"
 import {RGB} from "../graphics/color.js"
 import {ColorController, NumberController} from "../graphics/colorAndNumberController.js"
-import {costs, Material, MaterialStack, MaterialBackpack} from "../economy/material.js"
+import {costs, prefabs, Material, MaterialStack, MaterialBackpack, IdleItem, IdleItemStack, ItemBackpack} from "../economy/material.js"
 import {Trade} from "../economy/trade.js"
 
 
@@ -16,16 +16,17 @@ export class App {
     
 
     this.userData = await getUserData(this.user.uid);
-    var tempBackpack = new MaterialBackpack();
-    tempBackpack.construct(this.userData.materials)
-    this.userBackpack = tempBackpack;
+    
+    this.userBackpack = new MaterialBackpack((a)=>this.idleCallback(a));
+    this.userBackpack.construct(this.userData.materials)
+    
+    
     //console.log("Building...",this.userBackpack)
 
-    
     window.addEventListener("beforeunload", ()=>updateUserTimeStamp(this.user.uid));
     this.numberController = new NumberController();
     this.numLength = 10;
-    this.money = this.userBackpack.dict.Bit.quantity;
+    this.money = this.userBackpack.amount("Bit");
     
 
     document.getElementById("username").innerHTML = this.user.displayName
@@ -37,7 +38,7 @@ export class App {
     //tests for trade fuffilment.
     this.rawTrades = await getTrades();
     this.trades=[];
-    console.log(this.rawTrades.length)
+    //console.log(this.rawTrades.length)
     for (var i=0;i<this.rawTrades.length;i++){
       var temp = new Trade();
       temp.construct(this.rawTrades[i])
@@ -48,9 +49,36 @@ export class App {
     document.getElementById("material-button-container").style.display = "inline"
 
     this.addMaterialButtons();
+    this.addIdleItemButtons();
     this.displayTradeOptions();
     this.createCreateTradeSelect();
     this.createNavigationListeners(); //Part2ElectricBoogaloo
+    
+    
+    
+    //ItemBackpack Tests:
+    var tempItemBackpack = new ItemBackpack();
+    tempItemBackpack.construct(this.userData.items,this.userBackpack);  
+    this.itemBackpack = tempItemBackpack
+    if(!this.userData.items){
+      //console.log(tempItemBackpack.toJSON())
+      var pointer = "pointer"
+      
+      this.itemBackpack.addIdleItemStack(new IdleItemStack(pointer, 1, this.itemBackpack));
+      alert("Congratulations you've unlocked your first idle item. [Object Pointer: Bits/sec = 0.1]")
+      //console.log(this.itemBackpack)
+      updateItemData(this.user.uid,this.itemBackpack)
+    }
+    //console.log(this.itemBackpack.toJSON())
+    this.itemBackpack.runAllOffline(this.userData.logOutTime)
+    this.itemBackpack.runAll();
+
+
+    
+    
+    
+    
+    //Part2ElectricBoogaloo
     //binds onButtonUpdate to click of the main button
     document.getElementById("main-button").addEventListener("click", () => this.onButtonUpdate())
     document.getElementById("sign-out-button").addEventListener("click", signOutUser)
@@ -58,6 +86,12 @@ export class App {
     attachTradeListener(()=>this.displayTradeOptions());
   }
   
+  idleCallback (a){
+    //console.log("idle Callback ->",a)
+    this.refreshUserBackpack(a);
+    updateBackpackData(this.user.uid,a);
+  }
+
   onNetWorthChange(snap){
     //console.log("First",snap)
     var board = document.getElementById("board")
@@ -68,75 +102,69 @@ export class App {
     keys.sort((a,b) => snap[b].netWorth - snap[a].netWorth);
     var sorted = keys.map(key => snap[key]);
     for (var i in sorted){
-      middle+="<li>"+sorted[i].username+" : "+sorted[i].netWorth+"</li>"
+      middle+="<li>"+sorted[i].username+" : "+bitUnitConversion(sorted[i].netWorth)+"</li>"
     }
     board.innerHTML=(html1+middle+html2)
   }
 
   createNavigationListeners() {
-    //automate this process
+    var containerList = ["create-trade-container","material-button-container","idle-purchase-container","main-inventory-container"]
+    
+    var buttonList = ["tradesNav","premiumNav","idlePurchaseNav","inventoryNav"]
+    var current = 0;
+    var currentButton = document.getElementById(buttonList[current]);
+    var currentContainer = document.getElementById(containerList[current])
+
     hideAll();
-    function hideAll() {
-      document.getElementById("create-trade-container").style.display = "none"
-      document.getElementById("material-button-container").style.display = "none"
-      document.getElementById("idle-purchase-container").style.display = "none"
-      document.getElementById("tradesNav").style.color = "white";
-      document.getElementById("premiumNav").style.color = "white";
-      document.getElementById("idlePurchaseNav").style.color = "white";
-    }
+    
+    function setCurrent(index) {
+      hideCurrent()
+      
+      current = index;
 
-    document.getElementById("tradesNav").addEventListener("click", ()=>{
-      hideAll()
-      document.getElementById("create-trade-container").style.display = "inline"
-      document.getElementById("tradesNav").style.color = "rgb(255,155,8)";
-    })
-
-    document.getElementById("premiumNav").addEventListener("click", ()=>{
-      hideAll()
-      document.getElementById("material-button-container").style.display = "inline"
-      document.getElementById("premiumNav").style.color = "rgb(255,155,8)";
-    })
-
-
-    document.getElementById("idlePurchaseNav").addEventListener("click", ()=>{
-      hideAll()
-      document.getElementById("idle-purchase-container").style.display = "inline"
-      document.getElementById("idlePurchaseNav").style.color = "rgb(255,155,8)";
-    })
-  }
-
-  createNavigationListenersPart2ElectricBoogaloo() {
-    var containerList = ["create-trade-container","material-button-container","idle-purchase-container"]
-    var buttonList = ["tradesNav","premiumNav","idlePurchaseNav"]
-    console.log("function running")
-    function hideAll() {
-      for (var i = 0; i < buttonList.length; i++) {
-        
-        document.getElementById(containerList[i]).style.display = "none";
-        document.getElementById(buttonList[i]).style.color = "white";
-        console.log("hiding: " + containerList[i]);
-      }
+      currentButton = document.getElementById(buttonList[current]);
+      console.log(current)
+      currentContainer = document.getElementById(containerList[current])
+      console.log(buttonList[current],containerList[current])
+      currentContainer.style.display = "inline"
+      currentButton.style.borderColor = "rgba(240,46,170,1)"
     }
     
-    for (var i = 0; i < buttonList.length; i++) {
+    function hideAll(){
+      for (var i =0;i<containerList.length;i++ ) {
+        document.getElementById(containerList[i]).style.display = "none";
+        document.getElementById(buttonList[i]).style.borderColor = "rgba(240, 46, 170, 0.4)"; 
+      }
+    }
 
-      document.getElementById(buttonList[i]).addEventListener("click", ()=>{
-        
-        hideAll()
-        document.getElementById(containerList[i]).style.display = "inline"
-        document.getElementById(buttonList[i]).style.color = "rgb(255,155,8)";
-        
-      })
-      console.log("listener created: " + buttonList[i])
+    function hideCurrent() {
+      currentContainer.style.display = "none";
+      currentButton.style.borderColor = "rgba(240, 46, 170, 0.4)";
+    }
+    
+    function getOnClick(i){
+      return ()=>setCurrent(i)
+    }
+
+    for (var i = 0; i < buttonList.length; i++) {
+      console.log("i:",i)
+      var button = document.getElementById(buttonList[i])
+      button.num = i;
+      var f = getOnClick(i);
+      button.addEventListener("click", f)
     }
     
   }
   
   //updates visual display of materials
   refreshUserBackpack(userBackpack){
-        this.userBackpack=userBackpack;
+        //console.log("refreshing",userBackpack)
+        if(userBackpack){
+          this.userBackpack.altConstruct(userBackpack);
+        }
+        //console.log(this.userBackpack)
         this.money=this.userBackpack.dict.Bit.quantity;
-       
+        //console.log("money: "+this.money)
         //TODO: change this terrible code
         var container = document.getElementById("inventory-container");
         container.innerHTML="";
@@ -145,7 +173,7 @@ export class App {
         document.getElementById("bits").innerHTML = bitUnitConversion(this.money)
 
         document.getElementById("net-worth").innerHTML = "Net Worth: "+this.userBackpack.getNetWorth().toString();
-    }
+  }
 
   //creates material buttons where you can buy materials for bits
   addMaterialButtons() {
@@ -162,15 +190,60 @@ export class App {
       button.user = this.user;
       button.app = this
       button.onclick = function () {
-        var u =this.userBackpack
-        this.userBackpack.addMaterialStack(new MaterialStack(this.material,1))
-        console.log(u==this.userBackpack)
-        this.addMoney(-this.price)
-        updateBackpackData(this.user.uid, this.userBackpack)
-        button.app.refreshUserBackpack(this.userBackpack)
+        if (this.userBackpack.amount("Bit") >= this.price) {
+          var u =this.userBackpack
+          this.userBackpack.addMaterialStack(new MaterialStack(this.material,1))
+          this.addMoney(-this.price)
+          updateBackpackData(this.user.uid, this.userBackpack)
+          button.app.refreshUserBackpack(this.userBackpack);
+        }
       }
     }
   }
+
+  addIdleItemButtons(){
+    var container = document.getElementById("idle-purchase-container");
+    for (var material in prefabs) {
+      var button = document.createElement("Button");
+      container.appendChild(button);
+      //var multiplier = this.itemBackpack[material]?this.itemBackpack[material].quantity:0;
+      var multiplier = 0;
+      var str = "";
+      for (var i in prefabs[material].cost){
+        var s = prefabs[material].cost[i];
+        str+=""+(s.quantity+multiplier)+" "+s.type+", "
+      }
+      button.textContent = "Get a " + material+" for: " + str.substr(0,str.length-2)
+      button.className = "idle-button"
+      button.addMoney = (material) => {
+        for (var i in prefabs[material].cost){
+          var x = prefabs[material].cost[i];
+          this.userBackpack.subMaterialStack(new 
+          MaterialStack(x.type,x.quantity+multiplier))
+        }
+      };
+      
+      button.material = material
+      button.userBackpack = this.userBackpack
+      button.user = this.user;
+      button.app = this
+      button.onclick = function () {
+        if(this.userBackpack.canAfford(prefabs[this.material].cost)){
+          var ib =this.app.itemBackpack
+          ib.addIdleItemStack(new IdleItemStack(this.material,1))
+          this.addMoney(this.material);
+          updateItemData(this.user.uid,ib);
+          updateBackpackData(this.user.uid, this.userBackpack);
+        }
+        else{
+         this.app.displayError("you cannot afford this item",false);
+        }
+      }
+    }
+  }
+
+
+
   addMaterialDisplay() {
     //console.log("update material")
     var container = document.getElementById("inventory-container");
@@ -195,9 +268,35 @@ export class App {
       text.className = "inventory-text"
     }
   }
+
+  addIdleItemDisplay() {
+    //console.log("update material")
+    var container = document.getElementById("main-inventory-container");
+    container.innerHTML=""
+    for (var model in prefabs) {
+      //console.log(material)
+      
+      var div =document.createElement("div");
+      div.className="idle-item-container"
+      var text = document.createElement("h4");
+      
+      div.appendChild(text); 
+      div.appendChild(img);
+      container.appendChild(div);
+      
+      if (this.itemBackpack.dict[model]) {
+        text.textContent = model + ": \n" + this.itemBackpack.dict[model].quantity
+      }
+      text.className = "inventory-text"
+    }
+  }
+
+
+
+
   createTradeButtonEventListener(button,trade){
     button.addEventListener("click", ()=>{
-      console.log(button.id)
+      //(button.id)
        trade.fulfill(button.user, button.userBackpack)
        button.remove();
        this.refreshUserBackpack(this.userBackpack)
@@ -207,7 +306,7 @@ export class App {
 
   //creates new trade
   //first input is what you want second is what you give
-  onCreateTradeClick(){
+  async onCreateTradeClick(){
     //console.log("run")
     var sellerGetsSelect = document.getElementById("to-give-select");
     var buyerGetsSelect = document.getElementById("to-get-select");
@@ -216,9 +315,13 @@ export class App {
     var getStack = new MaterialStack(buyerGetsSelect.value,parseInt(buyerGetsNum));
     var giveStack = new MaterialStack(sellerGetsSelect.value,parseInt(sellerGetsNum));
     //buyerGets sellerGets seller uid
+    
+
     var trade = new Trade(getStack,giveStack,this.user.uid)
     //console.log(trade)
-    if(trade.validate()){
+    var val = await trade.validate(this.displayError)
+    console.log("validate token",val);
+    if(val){
       trade.store();
       console.log("successfully validated")
       sellerGetsSelect.value="Silicon"
@@ -228,7 +331,12 @@ export class App {
       alert("Trade Successfully Created :)")
     }
   }
+  displayError(message, val){
+    
+    alert(val)
 
+    return val;
+  }
 
   createCreateTradeSelect(){
     var sellerGetsSelect = document.getElementById("to-give-select");
@@ -250,13 +358,13 @@ export class App {
 
     //TODO: fix bad code
     this.userData = await getUserData(this.user.uid);
-    var tempBackpack = new MaterialBackpack();
-    tempBackpack.construct(this.userData.materials)
-    this.userBackpack = tempBackpack;
+    
+    this.userBackpack.construct(this.userData.materials)
+
     this.refreshUserBackpack(this.userBackpack)
     this.rawTrades = await getTrades();
     this.trades=[];
-    console.log(this.rawTrades.length)
+    //console.log(this.rawTrades.length)
     for (var i=0;i<this.rawTrades.length;i++){
       var temp = new Trade();
       temp.construct(this.rawTrades[i])
@@ -264,18 +372,33 @@ export class App {
     }
     var container = document.getElementById("trade-container");
     container.innerHTML="";
+    var header = document.createElement("p");
+      header.className="trades-header"
+      header.textContent="trades"
+      container.appendChild(header);
     for (var i in this.trades) {
       var trade = this.trades[i]
-      //console.log(trade)
-      var button = document.createElement("Button");
-      container.appendChild(button);
-      button.textContent = "Get " + trade.buyerGets.quantity+" "+trade.buyerGets.material.type+" for: " + trade.sellerGets.quantity+" "+trade.sellerGets.material.type;
-      button.className="trade-btn"
-      button.id = "trade-btn-"+i;
-      button.userBackpack = this.userBackpack
-      button.user = this.user;
-      button.num = i;
-      this.createTradeButtonEventListener(button,trade);
+      if (trade.seller != this.user.uid)  {
+        //console.log(trade)
+        var button = document.createElement("Button");
+        container.appendChild(button);
+        button.textContent = "Get " + trade.buyerGets.quantity+" "+trade.buyerGets.material.type+" for: " + trade.sellerGets.quantity+" "+trade.sellerGets.material.type;
+        button.className="trade-btn"
+        button.id = "trade-btn-"+i;
+        button.userBackpack = this.userBackpack
+        button.user = this.user;
+        button.num = i;
+        this.createTradeButtonEventListener(button,trade);
+      } else {
+        var button = document.createElement("Button");
+        container.appendChild(button);
+        button.textContent = "You give: " + trade.buyerGets.quantity+" "+trade.buyerGets.material.type+" and get: " + trade.sellerGets.quantity+" "+trade.sellerGets.material.type;
+        button.className="trade-btn"
+        button.id = "trade-btn-"+i;
+        button.userBackpack = this.userBackpack
+        button.user = this.user;
+        button.num = i;
+      }
     }
   }
   //adds money and refreshes onscreen values
@@ -284,12 +407,9 @@ export class App {
     updateBackpackData(this.user.uid, this.userBackpack)
     this.refreshUserBackpack(this.userBackpack)
   }
-  //makes things
+  //function for when main button is clicked
   onButtonUpdate() {
-    //this.colorController.clicks += 1
-    //this.colorController.colorClicks += 1
     this.numberController.clicks += 1
-    //console.log("clicks")
     getRandomNumberString(this.numLength);
     this.addMoney(1)
     if (Math.random() < .4) {

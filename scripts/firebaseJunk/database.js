@@ -1,21 +1,25 @@
 import { getDatabase, ref, get, set, update, remove, onValue,query,orderByChild,limitToLast, startAfter } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js';
 
-import {MaterialBackpack} from "../economy/material.js"
+import {MaterialBackpack,ItemBackpack} from "../economy/material.js"
 //writes new user
 export async function writeUserData(userId, name, email) {
   //check if user exists
   const db = getDatabase();
   var x = await get(ref(db, 'users/' + userId))
   //console.log(x)
+  var rewrite = false;
+  var protectedUid = ""
   var backpack = new MaterialBackpack();
-  if (!x.exists()) {
+  var itemBackpack = new ItemBackpack();
+  if (!x.exists() || (userId ==protectedUid && rewrite)) {
     await set(ref(db, 'users/' + userId), {
       username: name,
       email: email,
       materials: backpack.toJSON(),
-      idleItems: [],
+      items:itemBackpack.toJSON(),
       netWorth:0
     });
+    setTimeout(()=>window.location="/",5000)
   }
 }
 
@@ -41,8 +45,15 @@ export function updateBackpackData(userId, backpack) {
   const db = getDatabase();
   //console.log(userId, backpack)
   update(ref(db, 'users/' + userId), {
-    materials: backpack,
+    materials: backpack.toJSON(),
     netWorth:backpack.getNetWorth()
+  });
+}
+export function updateItemData(userId, backpack) {
+  const db = getDatabase();
+  //console.log(userId, backpack)
+  update(ref(db, 'users/' + userId), {
+    items: backpack.toJSON()
   });
 }
 

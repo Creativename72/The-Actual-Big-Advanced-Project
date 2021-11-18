@@ -14,6 +14,7 @@ export class Trade{
     this.seller = seller; 
     //TODO: make sure ids do not overlap
     this.id = Math.round(Math.random()*100000000);
+    this.defaultCallback = (a,val) => {console.log(a);return val}
   }
   construct(obj){
     this.timePosted=obj.timePosted;
@@ -23,11 +24,33 @@ export class Trade{
     this.seller = obj.seller;
     this.id = obj.id;
   }
-  validate(){
-    if(this.seller&&this.buyerGets.type&&this.buyerGets.quantity&&this.sellerGets.type&&this.sellerGets.quantity){
-      return true
+  async validate(callback = this.defaultCallback ){
+    return new Promise(async (res)=>{
+    var sellerData = await getUserData(this.seller);
+    
+    var sellerBackpack = new MaterialBackpack();
+    sellerBackpack.construct(sellerData.materials)
+    console.log(sellerBackpack)
+    if (!sellerBackpack.canAfford([this.buyerGets])){
+      res(callback("",false));
     }
-    return false
+
+    if(this.buyer){
+      var buyerData = await getUserData(this.buyer);
+      var buyerBackpack = new MaterialBackpack();
+      buyerBackpack.construct(buyerData.materials)
+      if (!buyerBackpack.canAfford([this.sellerGets])){
+      res( callback("",false));
+      } 
+    }
+
+    if(!(this.seller&&this.buyerGets.type&&this.buyerGets.quantity&&this.sellerGets.type&&this.sellerGets.quantity)){
+      res(callback("",false))
+    }
+    
+    res( callback("",true))
+
+ });
   }
 
   store(){
@@ -47,7 +70,13 @@ export class Trade{
   }
 
   async fulfill(user,userBackpack) {
-    
+    var bool = await this.validate()
+    if(bool){
+      alert("failed trade");
+      return
+    }
+
+
     var sellerData = await getUserData(this.seller);
   
     var sellerBackpack = new MaterialBackpack();
