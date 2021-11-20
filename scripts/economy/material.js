@@ -100,7 +100,6 @@ export class IdleItemStack {
 export class ItemBackpack{
   constructor() {
     this.dict = {};
-  
   }
   count(type){
     return this.dict[type]?this.dict[type].quantity:0
@@ -179,10 +178,6 @@ export class MaterialBackpack{
     } else {
       this.dict["Bit"] = new MaterialStack("Bit",bitNum)
     }
-  }
-  
-  amount(key) {
-    return this.dict[key].quantity
   }
 
   count(type){
@@ -273,20 +268,20 @@ export const prefabs = {
   "Pointer":{
     model:new IdleItem("Pointer",10,[new MaterialStack("Bit",1)]),
     cost:[new MaterialStack("Plastic",5),new MaterialStack("Bit",10)],
-    description:""
+    description:"I'm probably missing a good reference here, can someone give me a few pointers? gives 1 bit per tick"
   },"Dad's_PC":{
-    model:new IdleItem("Dad's_PC",10,[new MaterialStack("Bit",1)]),
+    model:new IdleItem("Dad's_PC",10,[new MaterialStack("Bit",3)]),
     cost:[new MaterialStack("Silicon",10),new MaterialStack("Bit",100)],
-    description:""
+    description:"It’s for a school project I swear. Mines 3 bits per tick"
   },"Plastic_Mining_Rig":{
     model:new IdleItem("Plastic_Mining_Rig",10,[new MaterialStack("Plastic",1)]),
     cost:[new MaterialStack("Plastic",10)],
-    description:"Mine the great garbage patch"
+    description:"Mine the great garbage patch. Produces one plastic per tick"
   },
   "Silicon_Mining_Rig":{
     model:new IdleItem("Silicon_Mining_Rig",10,[new MaterialStack("Silicon",1)]),
     cost:[new MaterialStack("Silicon",10)],
-    description:""
+    description:"Who doesn't love silicon?"
   }
 
 }
